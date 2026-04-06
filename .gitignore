@@ -1,0 +1,27 @@
+# Backend
+backend/.gradle/
+backend/build/
+backend/.idea/
+*.iml
+
+# Frontend
+mobile/node_modules/
+mobile/.expo/
+mobile/dist/
+mobile/android/
+mobile/ios/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
