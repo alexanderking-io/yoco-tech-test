@@ -74,6 +74,8 @@ jobs:
 
       - name: Build release APK
         working-directory: mobile/android
+        env:
+          API_BASE_URL: ${{ secrets.RAILWAY_API_URL }}
         run: ./gradlew assembleRelease
 
       - name: Create GitHub Release
