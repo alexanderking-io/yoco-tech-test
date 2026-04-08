@@ -60,9 +60,9 @@ export function RegisterItem({
 const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
-    marginBottom: StyleSheet.hairlineWidth,
+    marginBottom: 1,
     overflow: "hidden",
-    gap: StyleSheet.hairlineWidth,
+    gap: 1,
   },
   info: {
     flex: 0.75,

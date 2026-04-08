@@ -44,7 +44,7 @@ export function TotalRow({
 
 const baseContainer = {
   paddingTop: 12,
-  borderTopWidth: StyleSheet.hairlineWidth,
+  borderTopWidth: 1,
   gap: 4,
 } as const;
 

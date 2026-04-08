@@ -38,12 +38,12 @@ export function Keypad({ onDigit, onDelete, onAdd }: KeypadProps) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: StyleSheet.hairlineWidth,
-    gap: StyleSheet.hairlineWidth,
+    paddingTop: 1,
+    gap: 1,
     backgroundColor: Colors.secondaryBg,
   },
   row: {
     flexDirection: "row",
-    gap: StyleSheet.hairlineWidth,
+    gap: 1,
   },
 });
