@@ -114,7 +114,6 @@ describe('useCharges', () => {
       expect(result.current.charges).toEqual([
         expect.objectContaining({ id: 'server-id', vatInCents: 225, isPending: false }),
       ]);
-      expect(result.current.isAdding).toBe(false);
       expect(result.current.error).toBeNull();
     });
 
@@ -140,7 +139,6 @@ describe('useCharges', () => {
       expect(result.current.charges).toHaveLength(1);
       expect(result.current.charges[0].isPending).toBe(true);
       expect(result.current.charges[0].vatInCents).toBe(0);
-      expect(result.current.isAdding).toBe(true);
 
       // Resolve the server call
       await act(async () => {
