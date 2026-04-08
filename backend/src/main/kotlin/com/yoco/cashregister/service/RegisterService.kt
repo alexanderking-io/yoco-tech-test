@@ -120,10 +120,6 @@ class RegisterService {
         }
     }
 
-    /**
-     * Asserts the register is open, acquiring a row-level lock (FOR UPDATE).
-     * Must be called within an existing transaction — does not start its own.
-     */
     /** Asserts the register exists and is not soft-deleted. Must be called within a transaction. */
     fun assertExists(registerId: UUID) {
         Registers.selectAll()
@@ -132,6 +128,10 @@ class RegisterService {
             ?: throw NotFoundException("REGISTER_NOT_FOUND", "Register $registerId not found")
     }
 
+    /**
+     * Asserts the register is open, acquiring a row-level lock (FOR UPDATE).
+     * Must be called within an existing transaction — does not start its own.
+     */
     fun assertOpenLocking(registerId: UUID) {
         val register = Registers.selectAll()
             .where { (Registers.id eq registerId) and (Registers.deletedAt.isNull()) }

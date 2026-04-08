@@ -466,10 +466,8 @@ class IntegrationTest {
         client.patch("/registers/${register.id}/close")
         client.delete("/registers/${register.id}")
 
-        // Charges should be soft-deleted along with the register
-        val chargesList = client.get("/registers/${register.id}/charges").body<ChargesListResponse>()
-        assertEquals(0, chargesList.charges.size)
-        assertEquals(0L, chargesList.totalInCents)
+        val response = client.get("/registers/${register.id}/charges")
+        assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
     @Test
