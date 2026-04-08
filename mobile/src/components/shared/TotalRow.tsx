@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/colors";
 import { Opacity } from "../../constants/opacity";
 import { formatZAR } from "../../utils/currency";
@@ -7,15 +7,17 @@ import { formatZAR } from "../../utils/currency";
 interface TotalRowProps {
   totalInCents: number;
   totalVatInCents?: number;
+  hasPending?: boolean;
   variant?: "dark" | "light";
 }
 
 export function TotalRow({
   totalInCents,
   totalVatInCents,
+  hasPending = false,
   variant = "dark",
 }: TotalRowProps) {
-  console.log('TotalRow render:', { totalInCents, totalVatInCents, variant });
+  console.log("TotalRow render:", { totalInCents, totalVatInCents, variant });
   const isLight = variant === "light";
   const containerStyle = isLight ? styles.containerLight : styles.containerDark;
   const labelStyle = isLight ? styles.labelLight : styles.labelDark;
@@ -26,10 +28,17 @@ export function TotalRow({
     <View style={containerStyle}>
       {totalVatInCents !== undefined && totalVatInCents > 0 && (
         <View style={styles.row}>
-          <Text style={vatStyle}>VAT (incl.)</Text>
-          <Text style={[vatStyle, styles.tabularNums]}>
-            {formatZAR(totalVatInCents)}
-          </Text>
+          <Text style={vatStyle}>VAT (excl.)</Text>
+          {hasPending ? (
+            <ActivityIndicator
+              size={12}
+              color={isLight ? Colors.disabled : Colors.secondaryText}
+            />
+          ) : (
+            <Text style={[vatStyle, styles.tabularNums]}>
+              {formatZAR(totalVatInCents)}
+            </Text>
+          )}
         </View>
       )}
       <View style={styles.row}>
@@ -93,6 +102,6 @@ const styles = StyleSheet.create({
   },
   vatLight: {
     fontSize: 14,
-    color: Colors.disabled,
+    color: Colors.primaryText,
   },
 });

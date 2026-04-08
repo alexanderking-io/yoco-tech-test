@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors } from "../../constants/colors";
 import { formatZAR } from "../../utils/currency";
 import { formatDate, formatTime } from "../../utils/date";
@@ -9,6 +9,7 @@ import { RegisterStatus } from "../shared/RegisterStatus";
 interface RegisterItemProps {
   register: Register;
   totalInCents: number;
+  loading?: boolean;
   onPress: () => void;
   onClose?: () => void;
   onDelete?: () => void;
@@ -17,6 +18,7 @@ interface RegisterItemProps {
 export function RegisterItem({
   register,
   totalInCents,
+  loading = false,
   onPress,
   onClose,
   onDelete,
@@ -39,18 +41,20 @@ export function RegisterItem({
         <TouchableOpacity
           style={styles.closeButton}
           onPress={onClose}
+          disabled={loading}
           activeOpacity={0.7}
         >
-          <Text style={styles.closeText}>Close</Text>
+          {loading ? <ActivityIndicator color={Colors.primaryText} /> : <Text style={styles.closeText}>Close</Text>}
         </TouchableOpacity>
       )}
       {!isOpen && onDelete && (
         <TouchableOpacity
           style={styles.deleteButton}
           onPress={onDelete}
+          disabled={loading}
           activeOpacity={0.7}
         >
-          <Text style={styles.deleteText}>Delete</Text>
+          {loading ? <ActivityIndicator color={Colors.error} /> : <Text style={styles.deleteText}>Delete</Text>}
         </TouchableOpacity>
       )}
     </View>

@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 13,
-    color: Colors.disabled,
+    color: Colors.primaryText,
     textAlign: "right",
   },
   closeButton: {

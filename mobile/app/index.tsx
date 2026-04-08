@@ -22,6 +22,7 @@ export default function RegistersScreen() {
   const [registers, setRegisters] = useState<Register[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [actionsInFlight, setActionsInFlight] = useState<Set<string>>(new Set());
 
   const hasLoadedOnce = useRef(false);
 
@@ -65,6 +66,7 @@ export default function RegistersScreen() {
   );
 
   const handleCloseRegister = useCallback(async (registerId: string) => {
+    setActionsInFlight((prev) => new Set(prev).add(registerId));
     try {
       const closed = await registersApi.closeRegister(registerId);
       setRegisters((prev) =>
@@ -74,15 +76,20 @@ export default function RegistersScreen() {
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : `Failed to close register ${registerId}`);
+    } finally {
+      setActionsInFlight((prev) => { const next = new Set(prev); next.delete(registerId); return next; });
     }
   }, []);
 
   const handleDeleteRegister = useCallback(async (registerId: string) => {
+    setActionsInFlight((prev) => new Set(prev).add(registerId));
     try {
       await registersApi.deleteRegister(registerId);
       setRegisters((prev) => prev.filter((r) => r.id !== registerId));
     } catch (err) {
       setError(err instanceof Error ? err.message : `Failed to delete register ${registerId}`);
+    } finally {
+      setActionsInFlight((prev) => { const next = new Set(prev); next.delete(registerId); return next; });
     }
   }, []);
 
@@ -122,6 +129,7 @@ export default function RegistersScreen() {
           <RegisterItem
             register={item}
             totalInCents={item.totalInCents}
+            loading={actionsInFlight.has(item.id)}
             onPress={() =>
               item.status === "OPEN"
                 ? router.push(`/register/${item.id}`)

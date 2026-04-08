@@ -11,19 +11,11 @@ function isRegisterClosedError(err: unknown): boolean {
   );
 }
 
-function isIdempotencyKeyReuseError(err: unknown): boolean {
-  return (
-    err instanceof ApiRequestError &&
-    err.apiError.error === "IDEMPOTENCY_KEY_REUSE"
-  );
-}
-
 interface UseChargesResult {
   charges: LocalCharge[];
   totalInCents: number;
   totalVatInCents: number;
   isLoading: boolean;
-  isAdding: boolean;
   error: string | null;
   addCharge: (amountInCents: number) => Promise<boolean>;
   deleteCharge: (chargeId: string) => Promise<void>;
@@ -40,15 +32,11 @@ export function useCharges(
 ): UseChargesResult {
   const [charges, setCharges] = useState<LocalCharge[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Server-provided totals — source of truth for confirmed charges
   const [serverTotalInCents, setServerTotalInCents] = useState(0);
   const [serverTotalVatInCents, setServerTotalVatInCents] = useState(0);
-
-  // Store the pending idempotency key so it can be reused on retry
-  const pendingKeyRef = useRef<string | null>(null);
 
   // Ref to avoid stale closure over options in callbacks
   const optionsRef = useRef(options);
@@ -108,13 +96,9 @@ export function useCharges(
     async (amountInCents: number): Promise<boolean> => {
       if (!registerId) return false;
 
-      setIsAdding(true);
       setError(null);
 
-      // Generate idempotency key at the moment the user taps ADD.
-      // If a previous attempt failed, reuse the same key for safe retry.
-      const idempotencyKey = pendingKeyRef.current ?? generateIdempotencyKey();
-      pendingKeyRef.current = idempotencyKey;
+      const idempotencyKey = generateIdempotencyKey();
 
       // Optimistic insert — VAT will be set when the server responds
       const optimisticCharge: LocalCharge = {
@@ -148,8 +132,6 @@ export function useCharges(
         setServerTotalInCents((prev) => prev + charge.amountInCents);
         setServerTotalVatInCents((prev) => prev + charge.vatInCents);
 
-        // Success — clear the pending key so next ADD generates a fresh one
-        pendingKeyRef.current = null;
         return true;
       } catch (err) {
         // Rollback optimistic insert
@@ -162,13 +144,7 @@ export function useCharges(
         if (isRegisterClosedError(err)) {
           optionsRef.current?.onRegisterClosed?.();
         }
-        if (isIdempotencyKeyReuseError(err)) {
-          pendingKeyRef.current = null;
-        }
-        // keep pendingKeyRef.current so the same key is reused on retry
         return false;
-      } finally {
-        setIsAdding(false);
       }
     },
     [registerId],
@@ -220,7 +196,6 @@ export function useCharges(
     totalInCents,
     totalVatInCents,
     isLoading,
-    isAdding,
     error,
     addCharge,
     deleteCharge,

@@ -75,10 +75,10 @@ export default function CashRegisterScreen() {
 
   const { cents, appendDigit, deleteDigit, reset, isZero } = useAmountInput();
 
-  const handleAdd = async () => {
+  const handleAdd = () => {
     if (isZero || !register || isRegisterClosed) return;
-    const success = await addCharge(cents);
-    if (success) reset();
+    addCharge(cents);
+    reset();
   };
 
   const isRegisterClosed = register?.status === "CLOSED";

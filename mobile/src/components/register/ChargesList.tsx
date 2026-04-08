@@ -44,7 +44,7 @@ export function ChargesList({
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.secondaryBg} />
+        <ActivityIndicator size="large" color={Colors.white} />
       </View>
     );
   }
@@ -73,7 +73,7 @@ export function ChargesList({
           }
         }}
       />
-      <TotalRow totalInCents={totalInCents} totalVatInCents={totalVatInCents} />
+      <TotalRow totalInCents={totalInCents} totalVatInCents={totalVatInCents} hasPending={charges.some((c) => c.isPending)} />
     </View>
   );
 }
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: Colors.secondaryBg,
   },
   emptyContainer: {
     alignItems: "center",
