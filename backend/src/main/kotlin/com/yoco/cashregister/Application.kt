@@ -13,9 +13,6 @@ import com.yoco.cashregister.service.RegisterService
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 
-// PRODUCTION NOTE: In a production POS system, this service would sit behind an API gateway
-// with authentication (e.g., OAuth2/JWT), rate limiting per device, and TLS termination.
-
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
 }

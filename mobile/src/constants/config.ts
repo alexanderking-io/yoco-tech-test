@@ -1,9 +1,11 @@
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
-// PRODUCTION NOTE: In a production app, the API base URL would be configured per
-// environment (dev/staging/prod) via environment variables or a build-time config.
-// For local development, point this at your Docker host.
-export const API_BASE_URL = Platform.select({
+const buildTimeUrl = Constants.expoConfig?.extra?.apiBaseUrl as string | undefined;
+
+// Build-time URL (set via API_BASE_URL env var during expo prebuild) takes
+// precedence over the local dev defaults.
+export const API_BASE_URL = buildTimeUrl ?? Platform.select({
   android: 'http://10.0.2.2:8080',  // Android emulator special alias → host machine
   ios: 'http://localhost:8080',       // iOS Simulator shares the host network
   default: 'http://localhost:8080',

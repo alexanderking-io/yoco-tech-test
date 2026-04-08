@@ -14,9 +14,26 @@ object DatabaseConfig {
     private var currentDataSource: HikariDataSource? = null
 
     fun init(environment: ApplicationEnvironment): DataSource {
-        val url = environment.config.property("database.url").getString()
-        val user = environment.config.property("database.user").getString()
-        val password = environment.config.property("database.password").getString()
+        val rawUrl = environment.config.property("database.url").getString()
+
+        // Railway injects a connection-string-style DATABASE_URL
+        // e.g. postgresql://user:pass@host:5432/db — convert to JDBC components.
+        val (url, user, password) = if (rawUrl.startsWith("postgresql://") || rawUrl.startsWith("postgres://")) {
+            val uri = java.net.URI(rawUrl)
+            val userInfo = uri.userInfo.split(":")
+            val query = if (uri.query != null) "?${uri.query}" else ""
+            Triple(
+                "jdbc:postgresql://${uri.host}:${uri.port}${uri.path}$query",
+                userInfo[0],
+                userInfo.getOrElse(1) { "" }
+            )
+        } else {
+            Triple(
+                rawUrl,
+                environment.config.property("database.user").getString(),
+                environment.config.property("database.password").getString()
+            )
+        }
 
         // Reuse existing pool if connecting to the same URL (important for test reuse)
         val existing = currentDataSource
@@ -42,8 +59,6 @@ object DatabaseConfig {
             this.password = password
             maximumPoolSize = 10
             isAutoCommit = false
-            // PRODUCTION NOTE: In production, connection pool sizing should be tuned based on
-            // expected concurrent transaction volume and database server capacity.
             validate()
         }
         return HikariDataSource(config)

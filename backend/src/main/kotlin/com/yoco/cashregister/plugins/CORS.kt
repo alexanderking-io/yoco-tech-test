@@ -13,7 +13,5 @@ fun Application.configureCORS() {
         allowMethod(HttpMethod.Post)
         allowMethod(HttpMethod.Patch)
         allowMethod(HttpMethod.Delete)
-        // PRODUCTION NOTE: In production, CORS should be restricted to specific origins
-        // (e.g., the mobile app's API domain) rather than allowing any host.
     }
 }
